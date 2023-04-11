@@ -1,4 +1,4 @@
-# lab12-kafka-streams-cryptopsentiment
+# lab12Part1-kafka-streams-cryptopsentiment
 This lab code corresponds with Chapter 3 in the O'Reilly book: [Mastering Kafka Streams and ksqlDB][book] by Mitch Seymour. This tutorial covers **Stateless processing** in Kafka Streams. Here, many stateless operators are demonstrated in Kafka Streams' high-level DSL by building an application that transforms and enriches tweets about various cryptocurrencies.
 
 [book]: https://www.kafka-streams-book.com/
