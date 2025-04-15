@@ -8,7 +8,7 @@ This lab code corresponds with Chapter 3 in the O'Reilly book: [Mastering Kafka 
 You can start the local Kafka cluster using the following command:
 
 ```sh
-$ docker-compose up
+$ docker compose up
 ```
 
 Regarding the Kafka Streams application, there are two easy options for running the example code, depending on whether or not you want to use a dummy client for performing tweet translation and sentiment analysis, or if you actually want to use Google's Natural Language API (which requires a service account) to perform these tasks.
@@ -71,7 +71,7 @@ Now, follow the instructions in [Producing Test Data](#producing-test-data).
 A couple of test records are saved in the `data/test.json` file, which is mounted in the `kafka` container for convenience. Feel free to modify the data in this file as you see fit. Then, run the following command to produce the test data to the source topic (`tweets`).
 
 ```sh
-$ docker-compose exec kafka bash
+$ docker compose exec kafka bash
 
 $ kafka-console-producer \
   --bootstrap-server kafka:9092 \
@@ -80,7 +80,7 @@ $ kafka-console-producer \
 
 Then, in another tab, run the following command to consume data from the sink topic (`crypto-sentiment`).
 ```sh
-$ docker-compose exec schema-registry bash
+$ docker compose exec schema-registry bash
 
 $ kafka-avro-console-consumer \
  --bootstrap-server kafka:9092 \
