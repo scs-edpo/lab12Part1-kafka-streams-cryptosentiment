@@ -14,6 +14,7 @@ import org.apache.kafka.streams.kstream.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 class CryptoTopology {
   private static final List<String> currencies = Arrays.asList("bitcoin", "ethereum");
@@ -62,22 +63,19 @@ class CryptoTopology {
               return tweet.isRetweet();
             });
 
-    // match all tweets that specify English as the source language
-    Predicate<byte[], Tweet> englishTweets = (key, tweet) -> tweet.getLang().equals("en");
+      // split based on language
+      Map<String, KStream<byte[], Tweet>> branches = filtered
+              .split(Named.as("lang-"))
+              .branch((key, tweet) -> tweet.getLang().equals("en"), Branched.as("english"))
+              .defaultBranch(Branched.as("non-english"));
 
-    // match all other tweets
-    Predicate<byte[], Tweet> nonEnglishTweets = (key, tweet) -> !tweet.getLang().equals("en");
+      // English tweets
+      KStream<byte[], Tweet> englishStream = branches.get("lang-english");
+      englishStream.print(Printed.<byte[], Tweet>toSysOut().withLabel("tweets-english"));
 
-    // branch based on tweet language
-    KStream<byte[], Tweet>[] branches = filtered.branch(englishTweets, nonEnglishTweets);
-
-    // English tweets
-    KStream<byte[], Tweet> englishStream = branches[0];
-    englishStream.print(Printed.<byte[], Tweet>toSysOut().withLabel("tweets-english"));
-
-    // non-English tweets
-    KStream<byte[], Tweet> nonEnglishStream = branches[1];
-    nonEnglishStream.print(Printed.<byte[], Tweet>toSysOut().withLabel("tweets-non-english"));
+      // non-English tweets
+      KStream<byte[], Tweet> nonEnglishStream = branches.get("lang-non-english");
+      nonEnglishStream.print(Printed.<byte[], Tweet>toSysOut().withLabel("tweets-non-english"));
 
     // for non-English tweets, translate the tweet text first.
     KStream<byte[], Tweet> translatedStream =
